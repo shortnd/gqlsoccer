@@ -12,7 +12,7 @@ const typeDefs = gql`
     name: String!
     position: Postion
     squadNumber: Int
-    bio: String,
+    bio: String
     team: Team
   }
 
@@ -25,9 +25,29 @@ const typeDefs = gql`
 
   type Query {
     players: [Player]
-    player(id: ID): Player,
-    teams: [Team],
+    player(id: ID): Player
+    teams: [Team]
     team(id: ID): Team
+  }
+
+  input PlayerInput {
+    id: ID
+    name: String
+    position: Postion
+    squadNumber: Int
+    bio: String
+    team: TeamInput
+  }
+
+  input TeamInput {
+    id: ID
+    name: String
+    league: String
+    players: [PlayerInput]
+  }
+
+  type Mutation {
+    addPlayer(player: PlayerInput): [Player]
   }
 `
 
@@ -40,7 +60,7 @@ const teams = [
   }
 ]
 
-const players = [
+let players = [
   {
     id: "1",
     name: "Nate Stinewasher",
@@ -72,6 +92,18 @@ const resolvers = {
       const { id } = arg;
       const foundTeam = teams.find(t => t.id == id)
       return foundTeam;
+    }
+  },
+  Mutation: {
+    addPlayer: (obj, { player }, context) => {
+      // Do mutation or db stuff
+      const newPlayerArray = [
+        ...players,
+        // Add new player
+        player
+      ]
+      // return data as expected in schema
+      return newPlayerArray;
     }
   },
   Player: {
